@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>22222</title>
     <script src="./main.js"></script>
 </head>
 <body>
@@ -22,7 +22,6 @@
             return this.id++;
         }
     }
-    
 
     class Subject{
         constructor(){
@@ -71,7 +70,10 @@
         onUpdate(food){
             this._el.value = this._name + " eat " + food._name + " amount:" + food._amount;
             //更新人手中的食物的数量
-            this._food._amount = food._amount - 25;
+            this._food.setFood({
+                _name:food._name,
+                _amount:food._amount - 25
+            });
         }
         eatFinish(){
             this._food.update(this._food);
@@ -84,13 +86,19 @@
     }
 
     class Food extends Subject{
-        constructor(){
+        constructor(name){
             super();
             this._name = name;
             this._amount = 100;
 
             this._foodStatus = -1;
         }
+
+        setFood(opts){
+            this._name = opts._name;
+            this._amount = opts._amount;
+        }
+
         setStatus(){
             this._foodStatus = 1;
             this.update(this);
@@ -115,7 +123,5 @@
                 xiaol.eatFinish();
             },1000)
         },1000)
-
-        
     }
 </script>
