@@ -15,7 +15,7 @@
     <div id="eating" style="display: none;">eating.....</div>
 </body>
 </html>
-<script>
+<script type="module">
     let idSeed = {
         id:10000,
         newId(){
@@ -23,14 +23,15 @@
         }
     }
     
-    let Subject = function(){
-        this._obervsers = [];
 
-        this.register = (observer)=>{
+    class Subject{
+        constructor(){
+            this._obervsers = [];
+        }
+        register(observer){
             this._obervsers.push(observer);
         }
-
-        this.unRegister = (observer)=>{
+        unRegister(observer){
             let _index = -1;
             for (let index = 0; index < this._obervsers.length; index++) {
                 if(this._obervsers[index]._id == observer._id){
@@ -41,53 +42,51 @@
                 this._obervsers.splice(_index,1);
             }
         }
-
-        this.update = (data)=>{
+        update(data){
             this._obervsers.forEach(x => {
                 x.onUpdate(data);
             });
         }
     }
 
-    let Observer = function(){
-        this._id = idSeed.newId();
-        this._el = null;
-        this.onUpdate = ()=>{
+
+    class Observer{
+        constructor(){
+            this._id = idSeed.newId();
+            this._el = null;
+        }
+        onUpdate(){
 
         }
     }
 
-    let Person = function(name,elId){
-        //观察者也可以是被观察者
-        Observer.call(this,[]);
-        Subject.call(this,[]);
-        this._name = name;
-        this._el = document.getElementById(elId);
-        this._food = null;
+    class Person{
+        constructor(name,elId){
+            this._name = name;
+            this._el = document.getElementById(elId);
+            this._food = null;
+        }
 
-        this.onUpdate = (food)=>{
+        onUpdate(food){
             this._food = food;
             this._el.value = this._name + " eat " + this._food._name + " amount:" + this._food._amount;
             this._food._amount = (this._food._amount - 25);
         }
-
-        this.eatFinish = ()=>{
+        eatFinish(){
             this.update(this._food);
         }
     }
 
-    let Food = function(name){
-        Subject.call(this,[]);
-        this._name = name;
-        this._amount = 100;
+    class Food extends Subject{
+        constructor(name){
+            super();
+            this._name = name;
+            this._amount = 100;
 
-        //init
-        this._foodStatus = -1;
-
-        this.setStatus = ()=>{
-            //ready
+            this._foodStatus = -1;
+        }
+        setStatus(){
             this._foodStatus = 1;
-
             this.update(this);
         }
     }
