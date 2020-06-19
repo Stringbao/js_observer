@@ -60,25 +60,31 @@
         }
     }
 
-    class Person{
+    class Person extends Observer{
         constructor(name,elId){
+            super();
             this._name = name;
             this._el = document.getElementById(elId);
-            this._food = null;
+            this._food = new Food();
         }
 
         onUpdate(food){
-            this._food = food;
-            this._el.value = this._name + " eat " + this._food._name + " amount:" + this._food._amount;
-            this._food._amount = (this._food._amount - 25);
+            this._el.value = this._name + " eat " + food._name + " amount:" + food._amount;
+            //更新人手中的食物的数量
+            this._food._amount = food._amount - 25;
         }
         eatFinish(){
-            this.update(this._food);
+            this._food.update(this._food);
+        }
+
+        //获取人手中的食物
+        getFood(){
+            return this._food;
         }
     }
 
     class Food extends Subject{
-        constructor(name){
+        constructor(){
             super();
             this._name = name;
             this._amount = 100;
@@ -91,15 +97,15 @@
         }
     }
 
-    let zouting = new Person("邹婷","txt1");
+    let zouting =  new Person("邹婷","txt1");
     let fish = new Food("鱼");
     fish.register(zouting);
 
     let xiaol = new Person("小玲","txt2");
-    zouting.register(xiaol);
+    zouting.getFood().register(xiaol);
 
     let rj = new Person("任杰","txt3");
-    xiaol.register(rj);
+    xiaol.getFood().register(rj);
 
     document.getElementById("btn1").onclick = function(){
         fish.setStatus();
