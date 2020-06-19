@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./main.js"></script>
+</head>
+<body>
+    <input type="button" id="btn1" value="开始吃鱼"/>
+    <input type="text" id="txt1" />
+    <input type="text" id="txt2"/>
+    <input type="text" id="txt3" />
+</body>
+</html>
+<script>
+    let idSeed = {
+        id:10000,
+        newId(){
+            return this.id++;
+        }
+    }
+    let Subject = function(){
+        this._obervsers = [];
+
+        this.register = (observer)=>{
+            this._obervsers.push(observer);
+        }
+
+        this.unRegister = (observer)=>{
+            let _index = -1;
+            for (let index = 0; index < this._obervsers.length; index++) {
+                if(this._obervsers[index]._id == observer._id){
+                    _index = index;
+                }
+            }
+            if(_index != -1){
+                this._obervsers.splice(_index,1);
+            }
+        }
+
+        this.update = (data)=>{
+            this._obervsers.forEach(x => {
+                x.onUpdate(data);
+            });
+        }
+    }
+
+    let Observer = function(){
+        //观察者也可以是被观察者
+        Subject.call(this,[]);
+        this._id = idSeed.newId();
+        this._el = null;
+        this.onUpdate = ()=>{
+
+        }
+    }
+
+    let Person = function(name,elId){
+        Observer.call(this,[]);
+        this._name = name;
+        this._el = document.getElementById(elId);
+        this._food = null;
+
+        this.onUpdate = (food)=>{
+            this._food = food;
+            this._el.value = this._name + " eat " + this._food._name + " amount:" + this._food._amount;
+            this._food._amount = (this._food._amount - 25);
+        }
+
+        this.eatFinish = ()=>{
+            this.update(this._food);
+        }
+    }
+
+    let Food = function(name){
+        Subject.call(this,[]);
+        this._name = name;
+        this._amount = 100;
+
+        //init
+        this._foodStatus = -1;
+
+        this.setStatus = ()=>{
+            //ready
+            this._foodStatus = 1;
+
+            this.update(this);
+        }
+    }
+
+    let zouting = new Person("邹婷","txt1");
+    let fish = new Food("鱼");
+    fish.register(zouting);
+
+    document.getElementById("btn1").onclick = function(){
+        fish.setStatus();
+
+        let xiaol = new Person("小玲","txt2");
+        zouting.register(xiaol);
+        window.setTimeout(function(){
+            zouting.eatFinish();
+        },1000)
+
+        let rj = new Person("任杰","txt3");
+        xiaol.register(rj);
+        window.setTimeout(function(){
+            xiaol.eatFinish();
+        },1000)
+    }
+</script>
